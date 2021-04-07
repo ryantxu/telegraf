@@ -1,6 +1,8 @@
 package all
 
 import (
+	_ "github.com/influxdata/telegraf/plugins/outputs/grafana-live"
+
 	//Blank imports for plugins to register themselves
 	// _ "github.com/influxdata/telegraf/plugins/outputs/amon"
 	// _ "github.com/influxdata/telegraf/plugins/outputs/amqp"
