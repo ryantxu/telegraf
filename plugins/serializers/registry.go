@@ -5,16 +5,11 @@ import (
 	"time"
 
 	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/serializers/carbon2"
-	"github.com/influxdata/telegraf/plugins/serializers/graphite"
 	"github.com/influxdata/telegraf/plugins/serializers/influx"
 	"github.com/influxdata/telegraf/plugins/serializers/json"
-	"github.com/influxdata/telegraf/plugins/serializers/msgpack"
 	"github.com/influxdata/telegraf/plugins/serializers/nowmetric"
 	"github.com/influxdata/telegraf/plugins/serializers/prometheus"
 	"github.com/influxdata/telegraf/plugins/serializers/prometheusremotewrite"
-	"github.com/influxdata/telegraf/plugins/serializers/splunkmetric"
-	"github.com/influxdata/telegraf/plugins/serializers/wavefront"
 )
 
 // SerializerOutput is an interface for output plugins that are able to
@@ -114,24 +109,14 @@ func NewSerializer(config *Config) (Serializer, error) {
 	switch config.DataFormat {
 	case "influx":
 		serializer, err = NewInfluxSerializerConfig(config)
-	case "graphite":
-		serializer, err = NewGraphiteSerializer(config.Prefix, config.Template, config.GraphiteTagSupport, config.GraphiteSeparator, config.Templates)
 	case "json":
 		serializer, err = NewJSONSerializer(config.TimestampUnits)
-	case "splunkmetric":
-		serializer, err = NewSplunkmetricSerializer(config.HecRouting, config.SplunkmetricMultiMetric)
 	case "nowmetric":
 		serializer, err = NewNowSerializer()
-	case "carbon2":
-		serializer, err = NewCarbon2Serializer(config.Carbon2Format)
-	case "wavefront":
-		serializer, err = NewWavefrontSerializer(config.Prefix, config.WavefrontUseStrict, config.WavefrontSourceOverride)
 	case "prometheus":
 		serializer, err = NewPrometheusSerializer(config)
 	case "prometheusremotewrite":
 		serializer, err = NewPrometheusRemoteWriteSerializer(config)
-	case "msgpack":
-		serializer, err = NewMsgpackSerializer()
 	default:
 		err = fmt.Errorf("Invalid data format: %s", config.DataFormat)
 	}
@@ -178,20 +163,8 @@ func NewPrometheusSerializer(config *Config) (Serializer, error) {
 	})
 }
 
-func NewWavefrontSerializer(prefix string, useStrict bool, sourceOverride []string) (Serializer, error) {
-	return wavefront.NewSerializer(prefix, useStrict, sourceOverride)
-}
-
 func NewJSONSerializer(timestampUnits time.Duration) (Serializer, error) {
 	return json.NewSerializer(timestampUnits)
-}
-
-func NewCarbon2Serializer(carbon2format string) (Serializer, error) {
-	return carbon2.NewSerializer(carbon2format)
-}
-
-func NewSplunkmetricSerializer(splunkmetricHecRouting bool, splunkmetricMultimetric bool) (Serializer, error) {
-	return splunkmetric.NewSerializer(splunkmetricHecRouting, splunkmetricMultimetric)
 }
 
 func NewNowSerializer() (Serializer, error) {
@@ -218,32 +191,4 @@ func NewInfluxSerializerConfig(config *Config) (Serializer, error) {
 
 func NewInfluxSerializer() (Serializer, error) {
 	return influx.NewSerializer(), nil
-}
-
-func NewGraphiteSerializer(prefix, template string, tagSupport bool, separator string, templates []string) (Serializer, error) {
-	graphiteTemplates, defaultTemplate, err := graphite.InitGraphiteTemplates(templates)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if defaultTemplate != "" {
-		template = defaultTemplate
-	}
-
-	if separator == "" {
-		separator = "."
-	}
-
-	return &graphite.GraphiteSerializer{
-		Prefix:     prefix,
-		Template:   template,
-		TagSupport: tagSupport,
-		Separator:  separator,
-		Templates:  graphiteTemplates,
-	}, nil
-}
-
-func NewMsgpackSerializer() (Serializer, error) {
-	return msgpack.NewSerializer(), nil
 }
