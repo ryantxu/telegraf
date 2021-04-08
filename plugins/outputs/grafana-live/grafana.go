@@ -15,9 +15,10 @@ type GrafanaLive struct {
 	Path string          `toml:"path"`
 	Log  telegraf.Logger `toml:"-"`
 
-	client     *live.GrafanaLiveClient
-	channels   map[string]*live.GrafanaLiveChannel
-	serializer serializers.Serializer
+	client                 *live.GrafanaLiveClient
+	channels               map[string]*live.GrafanaLiveChannel
+	serializer             serializers.Serializer
+	measurementsSerializer serializers.Serializer
 }
 
 var sampleConfig = `
@@ -27,6 +28,10 @@ var sampleConfig = `
   # The channel to write data into grafana with
   channel = "telegraf"
 `
+
+func (g *GrafanaLive) SetSerializer(serializer serializers.Serializer) {
+	g.serializer = serializer
+}
 
 func (g *GrafanaLive) Connect() error {
 	var err error
@@ -44,7 +49,6 @@ func (g *GrafanaLive) Connect() error {
 }
 
 func (g *GrafanaLive) Close() error {
-
 	return nil
 }
 
@@ -64,8 +68,8 @@ func (g *GrafanaLive) getChannel(name string) *live.GrafanaLiveChannel {
 
 	var err error
 	addr := live.ChannelAddress{
-		Scope:     "grafana",
-		Namespace: "measurements",
+		Scope:     "push",
+		Namespace: "archer",
 		Path:      g.Path + "/" + name,
 	}
 	c, err = g.client.Subscribe(addr)
@@ -84,6 +88,14 @@ type measurementsCollector struct {
 }
 
 func (g *GrafanaLive) Write(metrics []telegraf.Metric) error {
+	reqBody, err := g.serializer.SerializeBatch(metrics)
+	if err != nil {
+		return err
+	}
+	return g.client.Publish("push/influx/archer", reqBody)
+}
+
+func (g *GrafanaLive) writeMeasurements(metrics []telegraf.Metric) error {
 	measures := make(map[string]measurementsCollector)
 	for _, metric := range metrics {
 		name := metric.Name()
@@ -125,7 +137,7 @@ func init() {
 			TimestampUnits: int64(time.Duration(1) * time.Millisecond),
 		}
 		return &GrafanaLive{
-			serializer: s,
+			measurementsSerializer: s,
 		}
 	})
 }

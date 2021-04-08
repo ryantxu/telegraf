@@ -9,3 +9,5 @@ process.yml
 
 
 archer
+cmd/telegraf/telegraf
+cmd/telegraf/*.conf
