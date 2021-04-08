@@ -24,7 +24,7 @@ require (
 	github.com/golang/snappy v0.0.1
 	github.com/google/go-cmp v0.5.5
 	github.com/gosnmp/gosnmp v1.30.0
-	github.com/grafana/grafana-plugin-sdk-go v0.91.0
+	github.com/grafana/grafana-plugin-sdk-go v0.91.1-0.20210408085228-f2a83bebc3a0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/influxdata/tail v1.0.1-0.20200707181643-03a791b270e4
 	github.com/influxdata/toml v0.0.0-20190415235208-270119a8ce65
