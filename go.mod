@@ -13,6 +13,7 @@ require (
 	github.com/benbjohnson/clock v1.0.3
 	github.com/bmatcuk/doublestar/v3 v3.0.0
 	github.com/caio/go-tdigest v3.1.0+incompatible
+	github.com/centrifugal/centrifuge-go v0.7.1
 	github.com/dimchansky/utfbom v1.1.1
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-logfmt/logfmt v0.5.0
@@ -21,10 +22,10 @@ require (
 	github.com/gobwas/glob v0.2.3
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/geo v0.0.0-20190916061304-5b978397cfec
+	github.com/golang/protobuf v1.5.1 // indirect
 	github.com/golang/snappy v0.0.1
 	github.com/google/go-cmp v0.5.5
 	github.com/gosnmp/gosnmp v1.30.0
-	github.com/grafana/grafana-plugin-sdk-go v0.91.1-0.20210408085228-f2a83bebc3a0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/influxdata/tail v1.0.1-0.20200707181643-03a791b270e4
 	github.com/influxdata/toml v0.0.0-20190415235208-270119a8ce65
@@ -54,6 +55,8 @@ require (
 	golang.org/x/sys v0.0.0-20210309074719-68d13333faf2
 	golang.org/x/text v0.3.4
 	gonum.org/v1/gonum v0.7.0 // indirect
+	google.golang.org/genproto v0.0.0-20200911024640-645f7a48b24f // indirect
+	google.golang.org/grpc v1.36.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/djherbis/times.v1 v1.2.0
 )

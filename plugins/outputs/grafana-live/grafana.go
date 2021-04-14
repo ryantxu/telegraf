@@ -1,7 +1,6 @@
 package grafanalive
 
 import (
-	"github.com/grafana/grafana-plugin-sdk-go/live"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/outputs"
 	"github.com/influxdata/telegraf/plugins/serializers"
@@ -13,8 +12,7 @@ type GrafanaLive struct {
 	Stream string          `toml:"stream"`
 	Log    telegraf.Logger `toml:"-"`
 
-	client     *live.GrafanaLiveClient
-	channels   map[string]*live.GrafanaLiveChannel
+	client     *Client
 	serializer serializers.Serializer
 }
 
@@ -34,14 +32,11 @@ func (g *GrafanaLive) Connect() error {
 	var err error
 
 	g.Log.Infof("Connecting to grafana live: %s", g.URL)
-	g.client, err = live.InitGrafanaLiveClient(live.ConnectionInfo{
-		URL: g.URL,
-	})
+	g.client, err = NewClient(g.URL)
 	if err != nil {
 		return err
 	}
-	g.channels = make(map[string]*live.GrafanaLiveChannel)
-	g.client.Log.Info("Connected... waiting for data")
+	g.Log.Info("Connected... waiting for data")
 	return err
 }
 
@@ -55,11 +50,6 @@ func (g *GrafanaLive) SampleConfig() string {
 
 func (g *GrafanaLive) Description() string {
 	return "Send telegraf metrics to a grafana live stream"
-}
-
-type measurementsCollector struct {
-	ch      *live.GrafanaLiveChannel
-	metrics []telegraf.Metric
 }
 
 func (g *GrafanaLive) Write(metrics []telegraf.Metric) error {
